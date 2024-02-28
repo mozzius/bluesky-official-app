@@ -9,7 +9,10 @@ import {Button} from '#/components/Button'
 
 import * as Dialog from '#/components/Dialog'
 
-export {useDialogControl as usePromptControl} from '#/components/Dialog'
+export {
+  useDialogControl as usePromptControl,
+  type DialogControl as PromptControl,
+} from '#/components/Dialog'
 
 const Context = React.createContext<{
   titleId: string

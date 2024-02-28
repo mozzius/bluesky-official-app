@@ -16,6 +16,7 @@ import {
   NativeDropdown,
   DropdownItem as NativeDropdownItem,
 } from './NativeDropdown'
+
 import * as Toast from '../Toast'
 import {EventStopper} from '../EventStopper'
 import {useModalControls} from '#/state/modals'
@@ -35,6 +36,8 @@ import {useSession} from '#/state/session'
 import {isWeb} from '#/platform/detection'
 import {richTextToString} from '#/lib/strings/rich-text-helpers'
 import {useGlobalDialogsControlContext} from '#/components/dialogs/Context'
+import * as Prompt from '#/components/Prompt'
+import {DeletePostPrompt} from '#/components/dialogs/DeletePost'
 
 let PostDropdownBtn = ({
   testID,
@@ -69,6 +72,7 @@ let PostDropdownBtn = ({
   const openLink = useOpenLink()
   const navigation = useNavigation()
   const {mutedWordsDialogControl} = useGlobalDialogsControlContext()
+  const deletePostPromptControl = Prompt.usePromptControl()
 
   const rootUri = record.reply?.root?.uri || postUri
   const isThreadMuted = mutedThreads.includes(rootUri)
@@ -272,12 +276,7 @@ let PostDropdownBtn = ({
     isAuthor && {
       label: _(msg`Delete post`),
       onPress() {
-        openModal({
-          name: 'confirm',
-          title: _(msg`Delete this post?`),
-          message: _(msg`Are you sure? This cannot be undone.`),
-          onPressConfirm: onDeletePost,
-        })
+        deletePostPromptControl.open()
       },
       testID: 'postDropdownDeleteBtn',
       icon: {
@@ -308,17 +307,27 @@ let PostDropdownBtn = ({
   ].filter(Boolean) as NativeDropdownItem[]
 
   return (
-    <EventStopper>
-      <NativeDropdown
-        testID={testID}
-        items={dropdownItems}
-        accessibilityLabel={_(msg`More post options`)}
-        accessibilityHint="">
-        <View style={style}>
-          <FontAwesomeIcon icon="ellipsis" size={20} color={defaultCtrlColor} />
-        </View>
-      </NativeDropdown>
-    </EventStopper>
+    <>
+      <EventStopper>
+        <NativeDropdown
+          testID={testID}
+          items={dropdownItems}
+          accessibilityLabel={_(msg`More post options`)}
+          accessibilityHint="">
+          <View style={style}>
+            <FontAwesomeIcon
+              icon="ellipsis"
+              size={20}
+              color={defaultCtrlColor}
+            />
+          </View>
+        </NativeDropdown>
+      </EventStopper>
+      <DeletePostPrompt
+        control={deletePostPromptControl}
+        onDeletePost={onDeletePost}
+      />
+    </>
   )
 }
 

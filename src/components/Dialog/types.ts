@@ -25,10 +25,12 @@ export type DialogControlProps = {
   close: (callback?: () => void) => void
 }
 
+export type DialogControl = {
+  ref: React.RefObject<DialogControlProps>
+} & DialogControlProps
+
 export type DialogOuterProps = {
-  control: {
-    ref: React.RefObject<DialogControlProps>
-  } & DialogControlProps
+  control: DialogControl
   onClose?: () => void
   nativeOptions?: {
     sheet?: Omit<BottomSheetProps, 'children'>
